@@ -24,8 +24,10 @@ node_modules
 data/*
 data/berlin/*
 !data/berlin
-!data/berlin/config.yaml
-!data/berlin/images
+!data/*/config.yaml
+!data/*/images
+!data/yangpyeong/reconstruction.json
+!data/yangpyeong/reconstruction.geocoords.json
 
 # Ignore virtualenv files
 env/*

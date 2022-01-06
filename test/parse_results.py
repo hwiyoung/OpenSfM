@@ -4,11 +4,14 @@ import numpy as np
 import pandas as pd
 
 here = Path(__file__).parent.parent
-fname = here / 'data/berlin/reconstruction_example.json'
-fname2 = here / 'data/berlin/tracks_example.csv'
-fname3 = here / 'data/berlin/reconstruction_03_test.json'
-
-target_name = "03.jpg"
+# fname = here / 'data/berlin/reconstruction_example.json'
+# fname2 = here / 'data/berlin/tracks_example.csv'
+# fname3 = here / 'data/berlin/reconstruction_03_test.json'
+# target_name = "03.jpg"
+fname = here / 'data/yangpyeong/reconstruction.json'
+fname2 = here / 'data/yangpyeong/tracks.csv'
+fname3 = here / 'data/yangpyeong/reconstruction_test.json'
+target_name = "DJI_0245.JPG"
 
 with fname.open() as f:
     json_data = json.load(f)
