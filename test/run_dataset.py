@@ -23,11 +23,24 @@ subprocess.run([exec, 'create_tracks', data_path])
 # 5. reconstruct
 print(f"\n\n***************\n* reconstruct *\n***************")
 subprocess.run([exec, 'reconstruct', data_path])
-# 6. export_geocoords
+# 6. export_geocoords ... TODO: How can I export EOP(X, Y, Z, O, P, K)??
 # --transformation: geocoords_transformation.txt
 # --image-positions: image_geocoords.tsv
 # --reconstruction: reconstruction.geocoords.json
 # --output
 print(f"\n\n********************\n* export_geocoords *\n********************")
 subprocess.run([exec, 'export_geocoords', '--proj', proj, '--reconstruction', data_path])
+#subprocess.run([exec, 'export_geocoords', '--proj', proj, '--image-positions' data_path])
 # 7. TODO: Override exif - exif_overrides.json in data_path
+# example:
+# {
+#     "image_name.jpg": {
+#         "gps": {
+#             "latitude": 52.51891,
+#             "longitude": 13.40029,
+#             "altitude": 27.0,
+#             "dop": 5.0
+#         }
+#     }
+# }
+# should replace data["image_name.jpg"]["gps"]["latitude"] to computed latitude
