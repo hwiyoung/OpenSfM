@@ -1,13 +1,29 @@
+import queue
 from re import sub
 import subprocess
 import os
+import shutil
+import sys
 
+sys.path.insert(0, '/source/OpenSfM')   # Now can import modules in built in /source/opensfm
+from opensfm.actions import export_geocoords2
+from opensfm.dataset import DataSet
 
 root = '/source/OpenSfM'
 exec = os.path.join(root, 'bin/opensfm')
 data_path = os.path.join(root, 'data/yangpyeong')
 
-proj = '+proj=tmerc +lat_0=38 +lon_0=127 +k=1 +x_0=200000 +y_0=600000 +ellps=GRS80 +units=m +no_defs'
+# Reset results
+datas = os.listdir(data_path)
+for data in datas:
+    path = os.path.join(data_path, data)
+    if not (data in ['images', 'queue', 'config.yaml']):
+        if os.path.isfile(path):
+            os.remove(path)
+        else:
+            shutil.rmtree(path)
+
+proj = '+proj=tmerc +lat_0=38 +lon_0=127 +k=1 +x_0=200000 +y_0=600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs'
 
 queue_files = os.listdir(os.path.join(data_path, 'queue'))
 queue_files.sort()
@@ -21,8 +37,17 @@ for i in range(len(queue_files) + 1):
         subprocess.run([exec, 'reconstruct', data_path])
         subprocess.run([exec, 'export_geocoords', '--proj', proj, '--transformation', data_path])
         subprocess.run([exec, 'export_geocoords', '--proj', proj, '--image-positions', data_path])
+        subprocess.run([exec, 'export_geocoords', '--proj', proj, '--reconstruction', data_path])
         # TODO: Select points by an image
+        # # Query points by track_id in target_image
+        # from opendm.ldm.points import query_points
+        # query_points(tree.opensfm_reconstruction, octx.path('tracks.csv'), tree.dataset_list, octx.path('reconstruction_org.json'))
         subprocess.run([exec, 'export_ply', '--no-cameras', data_path])
+        
+        ids, eos, pts = export_geocoords2.run_dataset(data=DataSet(data_path), proj=proj,
+                                                      transformation=False, image_positions=False, reconstruction=False, dense=False,
+                                                      georef=True, output=data_path)
+        # TODO: Visualize the intermediate result
     else:
         # Move new image from 'queue' foler to 'images' folder
         subprocess.run(['cp', os.path.join(data_path, 'queue', queue_files[i - 1]), os.path.join(data_path, 'images', queue_files[i - 1])])
@@ -36,6 +61,11 @@ for i in range(len(queue_files) + 1):
         # TODO: Select points by an image
         subprocess.run([exec, 'export_ply', '--no-cameras', data_path])
     
+# Restore an original state
+images = os.listdir(os.path.join(data_path, 'images'))
+for image in images:
+    if image in queue_files:
+        os.remove(image)
 
 
 # # 1. extract_metadata
